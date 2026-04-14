@@ -53,6 +53,9 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Cache Node_modules
+        uses: actions/cache@v3  
         id: cache-deps
         with:
           path: node_modules
