@@ -9,7 +9,7 @@ jobs:
 
   test:
     name: Test before publish
-    runs-on: self-hosted
+    runs-on: windows-latest
 
     defaults:
       run:
@@ -34,7 +34,7 @@ jobs:
 
   publish:
     name: Publish to GitHub Packages
-    runs-on: self-hosted
+    runs-on: windows-latest
     needs: [test]                        
 
     environment: npm-publish            
