@@ -7,11 +7,10 @@ on:
     types:
       - completed
 
-
 jobs:
-  
+
   test:
-    name: Test before publishing
+    name: Test before publish
     runs-on: windows-latest
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
 
@@ -23,22 +22,22 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Install Node.js
+      - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
+          node-version: "20"
+          cache: "npm"
 
       - name: Install dependencies
         run: npm ci
 
       - name: Run tests
         run: npm test
-    
+
   publish:
     name: Publish to GitHub Packages
     runs-on: windows-latest
-    needs: test
+    needs: [test]
 
     permissions:
       contents: read
@@ -52,12 +51,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Install Node.js
+      - name: Set up Node.js with GitHub Packages registry
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          registry-url: https://npm.pkg.github.com/
-          scope: '@Karamkb2000'
+          node-version: "20"
+          registry-url: "https://npm.pkg.github.com"
+          scope: "@karamkb2000"
 
       - name: Install dependencies
         run: npm ci
@@ -65,12 +64,12 @@ jobs:
       - name: Build package
         run: npm run build
 
-      - name: show version
+      - name: Show version being published
         run: |
           $version = node -e "process.stdout.write(require('./package.json').version)"
-          Write-Host "Version: $version"
-      
-      - name: Publish package
+          Write-Host "Publishing version: $version"
+
+      - name: Publish to GitHub Packages
         run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
