@@ -1,0 +1,73 @@
+name: CD
+
+on:
+  push:
+    tags:
+      - "v*.*.*"  
+
+jobs:
+
+  test:
+    name: Test before publish
+    runs-on: self-hosted
+
+    defaults:
+      run:
+        shell: pwsh
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: npm test
+
+
+  publish:
+    name: Publish to GitHub Packages
+    runs-on: self-hosted
+    needs: [test]                        
+
+    environment: npm-publish            
+    permissions:
+      contents: read
+      packages: write
+
+    defaults:
+      run:
+        shell: pwsh
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js with GitHub Packages registry
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          registry-url: "https://npm.pkg.github.com"
+          scope: "@karamkb2000"
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build package
+        run: npm run build
+
+      - name: Show version being published
+        run: |
+          $version = node -e "process.stdout.write(require('./package.json').version)"
+          Write-Host "Publishing version: $version"
+
+      - name: Publish to GitHub Packages
+        run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

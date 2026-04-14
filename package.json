@@ -1,0 +1,23 @@
+{
+  "name": "@karamkb2000/mathutils",
+  "version": "1.0.0",
+  "description": "A simple math utility library — used for learning CI/CD with GitHub Actions",
+  "main": "dist/index.js",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "lint": "eslint src/",
+    "test": "jest --coverage",
+    "build": "node build.js",
+    "prepublishOnly": "npm run build"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
+  "devDependencies": {
+    "eslint": "^8.57.0",
+    "jest": "^29.7.0"
+  },
+  "license": "MIT"
+}
